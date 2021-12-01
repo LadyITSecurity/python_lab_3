@@ -7,9 +7,11 @@ class Read_file_yaml:
 
     def __init__(self, filename: str) -> None:
         self._filename = filename
-        data = yaml.safe_load(open(self._filename))
-        for i in data:
-            self._array.append(i)
+        with open(self._filename) as f:
+             data = yaml.safe_load(f)
+        for i in tqdm(range(80000), desc="Запись корректных данных в файл: ", ncols=100):
+            for j in data:
+                self._array.append(i)
 
     def array_list(self) -> list:
         return self._array.copy()
@@ -21,6 +23,12 @@ class Data:
     def __init__(self, data: list):
         self._collection = data
 
+    def get_count_of_profile(self):
+        return len(self._collection)
+
+    def get_profile(self, i: int) -> dict:
+        return (self._collection[i]).copy()
+
 
 class Write_file:
     _filename: str
@@ -30,11 +38,13 @@ class Write_file:
 
     def write_file(self, collection: list) -> None:
 
+        """
         tmp = []
         for i in tqdm(range(collection.get_count_of_profile()), desc="Запись корректных данных в файл: ", ncols=100):
-            if collection.check_valid_information(i):
                 tmp.append(collection.get_profile(i))
-        yaml.dump(tmp, open(self._filename, "w", encoding="windows-1251"), ensure_ascii=False, sort_keys=False, indent=4)
+        """
+        yaml.dump(collection, open(self._filename, "w"), sort_keys=False, indent=4)
+
 
 import argparse
 
@@ -45,5 +55,5 @@ parser.add_argument("-write", type=str, default="result.yaml", help="write file"
 pars = parser.parse_args()
 lines = Read_file_yaml(pars.read)
 data = Data(lines.array_list())
-write = Write_file(pars.write)
-write.write_file(data)
+#write = Write_file(pars.write)
+#write.write_file(data)
